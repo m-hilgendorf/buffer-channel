@@ -30,8 +30,8 @@ pub struct RecvGuard<'a, T> {
 }
 
 struct Shared<T> {
-    send: crossbeam::utils::CachePadded<AtomicUsize>,
-    recv: crossbeam::utils::CachePadded<AtomicUsize>,
+    send: CacheAligned<AtomicUsize>,
+    recv: CacheAligned<AtomicUsize>,
     data: Box<[UnsafeCell<T>]>,
 }
 
@@ -41,6 +41,9 @@ unsafe impl<T> Sync for Shared<T> {}
 #[derive(Debug)]
 pub struct ChannelClosed;
 
+#[repr(align(128))]
+struct CacheAligned<T>(T);
+
 pub fn channel<T>(capacity: usize, mut default: impl FnMut() -> T) -> (Sender<T>, Receiver<T>) {
     assert!(capacity.is_power_of_two());
     let mut data = Vec::with_capacity(capacity);
@@ -49,8 +52,8 @@ pub fn channel<T>(capacity: usize, mut default: impl FnMut() -> T) -> (Sender<T>
     }
     let data = data.into_boxed_slice();
     let shared = Arc::new(Shared {
-        send: crossbeam::utils::CachePadded::new(AtomicUsize::new(0)),
-        recv: crossbeam::utils::CachePadded::new(AtomicUsize::new(0)),
+        send: CacheAligned::new(AtomicUsize::new(0)),
+        recv: CacheAligned::new(AtomicUsize::new(0)),
         data,
     });
     let sender = Sender {
@@ -180,5 +183,22 @@ impl<T> RecvGuard<'_, T> {
     pub fn truncate(&mut self, new_length: usize) {
         let length = (self.range.end - self.range.start).min(new_length);
         self.range.end = self.range.start + length;
+    }
+}
+
+impl<T> CacheAligned<T> {
+    pub fn new(value: T) -> Self { Self(value) }
+}
+
+impl<T> Deref for CacheAligned<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<T> DerefMut for CacheAligned<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }

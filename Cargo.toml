@@ -3,8 +3,5 @@ name = "buffer-channel"
 version = "0.1.0"
 edition = "2024"
 
-[dependencies]
-crossbeam = { version = "0.8.4", no-default-features = true }
-
 [dev-dependencies]
 cpal = "0.17"

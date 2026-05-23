@@ -1,4 +1,4 @@
-use bip_buffer_channel::channel;
+use buffer_channel::channel;
 use cpal::{
     BufferSize, InputCallbackInfo, OutputCallbackInfo, StreamConfig, StreamError,
     traits::{DeviceTrait, HostTrait},

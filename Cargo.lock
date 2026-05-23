@@ -31,14 +31,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 
 [[package]]
-name = "bip-buffer-channel"
-version = "0.1.0"
-dependencies = [
- "cpal",
- "crossbeam",
-]
-
-[[package]]
 name = "bitflags"
 version = "2.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -51,6 +43,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdeb9d870516001442e364c5220d3574d2da8dc765554b4a617230d33fa58ef5"
 dependencies = [
  "objc2",
+]
+
+[[package]]
+name = "buffer-channel"
+version = "0.1.0"
+dependencies = [
+ "cpal",
+ "crossbeam",
 ]
 
 [[package]]
